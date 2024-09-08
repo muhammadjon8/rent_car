@@ -15,21 +15,22 @@ export class UserGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const req = context.switchToHttp().getRequest();
-    const authHeader = req.headers.authorization;
+    const authHeader = req.headers.cookie;
+    console.log(req.headers);
     if (!authHeader) {
-      throw new UnauthorizedException(`Invalid authorization`);
+      throw new UnauthorizedException(`Invalid authorization1`);
     }
-    const bearer = authHeader.split(' ')[0];
-    const token = authHeader.split(' ')[1];
-    if (bearer !== 'Bearer' || !token) {
-      throw new UnauthorizedException(`Invalid authorization`);
+    const token = req.cookies["refresh_token"]
+    console.log(token)
+    if (!token) {
+      throw new UnauthorizedException(`Invalid authorization2`);
     }
 
     async function verify(token: string, jwtService: JwtService) {
       let user: any;
       try {
         user = await jwtService.verify(token, {
-          secret: process.env.ACCESS_TOKEN_KEY,
+          secret: process.env.REFRESH_TOKEN_KEY,
         });
       } catch (error) {
         throw new BadRequestException(error.message);

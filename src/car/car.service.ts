@@ -1,21 +1,58 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Car } from './entities/car.entity'; // Assuming you have a Car entity
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
+import { JwtService } from '@nestjs/jwt';
+import { UserCar } from '../user_car/entities/user_car.entity';
+import { Request } from 'express';
 
 @Injectable()
 export class CarService {
   constructor(
     @InjectRepository(Car)
     private readonly carRepository: Repository<Car>,
+    private readonly jwtService: JwtService,
+    @InjectRepository(UserCar)
+    private readonly userCarRepo: Repository<UserCar>,
   ) {}
 
-  async create(createCarDto: CreateCarDto) {
+  async create(createCarDto: CreateCarDto, req: any) {
     try {
+      // Step 1: Extract and verify the token from cookies
+      const token = req.cookies['refresh_token']; // Replace 'auth-token' with the actual key you're using
+      if (!token) {
+        throw new UnauthorizedException('No authentication token provided');
+      }
+
+      const decodedToken = await this.jwtService.verifyAsync(token, {
+        secret: process.env.REFRESH_TOKEN_KEY,
+      });
+
+      const userId = decodedToken.id; // Extract user ID from the token
+      if (!userId) {
+        throw new UnauthorizedException('Invalid token');
+      }
+
+      // Step 2: Create and save the car
       const car = this.carRepository.create(createCarDto);
-      return this.carRepository.save(car);
+      const savedCar = await this.carRepository.save({
+        userId: userId, // Set user ID
+        car, // Set car
+      });
+
+      // Step 3: Save the user-car relationship (assuming you have a UserCar entity)
+      await this.userCarRepo.save({
+        userId: userId, // Store user ID
+        carId: savedCar.id, // Store car ID
+      });
+
+      return savedCar; // Return the created car
     } catch (e) {
       return { error: e.message };
     }

@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { CarService } from './car.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserGuard } from '../admin/guards/user.guard';
+import { Request } from 'express';
 
 @ApiTags('car') // Adds the 'car' tag in Swagger UI
 @Controller('car')
@@ -27,8 +29,8 @@ export class CarController {
     description: 'The car has been successfully created.',
   })
   @ApiResponse({ status: 400, description: 'Bad request.' })
-  create(@Body() createCarDto: CreateCarDto) {
-    return this.carService.create(createCarDto);
+  create(@Body() createCarDto: CreateCarDto, @Req() req: Request) {
+    return this.carService.create(createCarDto, req);
   }
 
   @UseGuards(UserGuard)

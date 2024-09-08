@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { UserCar } from '../../user_car/entities/user_car.entity';
 
-@Entity("User")
+@Entity('User')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -25,4 +26,7 @@ export class User {
 
   @Column({ nullable: true })
   refreshToken: string;
+
+  @OneToMany(() => UserCar, (userCar) => userCar.user)
+  userCars: UserCar[];
 }
