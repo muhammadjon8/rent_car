@@ -77,7 +77,7 @@ export class OrderService {
   }
 
   findAll() {
-    return `This action returns all order`;
+    return this.orderRepo.find();
   }
 
   findOne(id: number) {
