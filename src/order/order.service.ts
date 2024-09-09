@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +6,7 @@ import { Car } from '../car/entities/car.entity';
 import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { Order } from './entities/order.entity';
+import { UpdateCarDto } from '../car/dto/update-car.dto';
 
 @Injectable()
 export class OrderService {
@@ -23,7 +24,7 @@ export class OrderService {
     });
 
     if (!car) {
-      throw new Error('Car not found');
+      throw new NotFoundException('Car not found');
     }
 
     const user = await this.userCarRepo.findOne({
@@ -31,7 +32,7 @@ export class OrderService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     // Check for date conflicts
@@ -68,27 +69,53 @@ export class OrderService {
 
     // Create and save the new order
     const newOrder = this.orderRepo.create(createOrderDto);
-    await this.orderRepo.save(newOrder);
+    await this.orderRepo.save({ ...newOrder, status: 'success' });
 
     return {
       order: newOrder,
       total: total,
+      status: 'success',
     };
   }
 
-  findAll() {
-    return this.orderRepo.find();
+  async findAll() {
+    try {
+      const orders = await this.orderRepo.find();
+      return orders;
+    } catch (error) {
+      console.error('Error getting car:', error);
+      throw new Error('Failed to get car');
+    }
+  }
+  async findOne(id: number) {
+    try {
+      const order = await this.orderRepo.findOne({
+        where: { id },
+      });
+      if (!order) {
+        throw new NotFoundException(`Order with ID ${id} not found`);
+      }
+      return order;
+    } catch (e) {
+      return { error: e.message };
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async update(id: number, updateOrderDto: UpdateOrderDto) {
+    try {
+      await this.orderRepo.update({ id }, updateOrderDto);
+      return this.findOne(id);
+    } catch (e) {
+      return { error: e.message };
+    }
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async remove(id: number) {
+    const orderToRemove = await this.findOne(id);
+    if ('error' in orderToRemove) {
+      // Car not found, return the error
+      return orderToRemove;
+    }
+    return this.orderRepo.remove([orderToRemove]);
   }
 }
