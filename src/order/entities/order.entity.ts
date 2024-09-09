@@ -18,4 +18,7 @@ export class Order {
 
   @Column()
   hours_rented: number;
+
+  @Column()
+  status: string;
 }
