@@ -43,10 +43,10 @@ export class Car {
   userId: number;
 
   @Column({ nullable: true })
-  start_days_from: Date;
+  booked_days_from: Date;
 
   @Column({ nullable: true })
-  start_days_to: Date;
+  booked_days_to: Date;
 
   @Column({ nullable: true })
   busy_hours: number
