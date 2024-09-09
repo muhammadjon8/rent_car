@@ -1,39 +1,39 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserCar } from '../../user_car/entities/user_car.entity';
 
-@Entity()
+@Entity('car')
 export class Car {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  markasi: string;
+  @Column({ nullable: true })
+  marka: string;
 
-  @Column()
+  @Column({ nullable: true })
   model: string;
 
-  @Column()
+  @Column({ nullable: true })
   manufacture_date: string;
 
-  @Column()
+  @Column({ nullable: true })
   color: string;
 
-  @Column()
+  @Column({ nullable: true })
   price_per_hour: number;
 
-  @Column()
+  @Column({ nullable: true })
   price_per_day: number;
 
-  @Column()
+  @Column({ nullable: true })
   location: string;
 
-  @Column()
+  @Column({ nullable: true })
   car_condition: string;
 
-  @Column()
+  @Column({ nullable: true })
   korobka: string;
 
-  @Column()
+  @Column({ nullable: true })
   full_fuel: string;
 
   @OneToMany(() => UserCar, (userCar) => userCar.car)

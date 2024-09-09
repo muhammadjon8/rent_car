@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCarDto {
   @ApiProperty({ description: 'Brand of the car', example: 'Toyota' })
-  markasi: string;
+  marka: string;
 
   @ApiProperty({ description: 'Model of the car', example: 'Corolla' })
   model: string;

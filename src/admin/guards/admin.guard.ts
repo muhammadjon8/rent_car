@@ -16,22 +16,21 @@ export class AdminGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const req = context.switchToHttp().getRequest();
-    const authHeader = req.headers.authorization;
-
+    const authHeader = req.headers.cookie;
+    console.log(req.headers);
     if (!authHeader) {
-      throw new UnauthorizedException(`Unuathorized admin`);
+      throw new UnauthorizedException(`Invalid authorization1`);
     }
-    const bearer = authHeader.split(' ')[0];
-    const token = authHeader.split(' ')[1];
-    if (bearer !== 'Bearer' || !token) {
-      throw new UnauthorizedException(`Invalid authorization`);
+    const token = req.cookies['refresh_token'];
+    console.log(token);
+    if (!token) {
+      throw new UnauthorizedException(`Invalid authorization2`);
     }
 
     async function verify(token: string, jwtService: JwtService) {
-      let admin: any;
       try {
         const admin = await jwtService.verify(token, {
-          secret: process.env.ACCESS_TOKEN_KEY,
+          secret: process.env.REFRESH_TOKEN_KEY,
         });
         const dataDecoded = await jwtService.decode(token, {
           // secret: process.env.ACCESS_TOKEN_KEY,

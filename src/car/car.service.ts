@@ -42,8 +42,8 @@ export class CarService {
       // Step 2: Create and save the car
       const car = this.carRepository.create(createCarDto);
       const savedCar = await this.carRepository.save({
+        ...car, // Set car
         userId: userId, // Set user ID
-        car, // Set car
       });
 
       // Step 3: Save the user-car relationship (assuming you have a UserCar entity)
@@ -98,5 +98,80 @@ export class CarService {
       return carToRemove;
     }
     return this.carRepository.remove([carToRemove]);
+  }
+
+  async searchByModel(model: string) {
+    try {
+      const cars = await this.carRepository
+        .createQueryBuilder('car')
+        .where('LOWER(car.model) LIKE LOWER(:model)', { model: `%${model}%` })
+        .getMany();
+
+      if (cars.length === 0) {
+        throw new NotFoundException(`No cars found with the model "${model}"`);
+      }
+      return cars;
+    } catch (error) {
+      console.error('Error searching for cars:', error);
+      throw new NotFoundException('Failed to search for cars');
+    }
+  }
+
+  async searchByMarka(marka: string) {
+    try {
+      const cars = await this.carRepository
+        .createQueryBuilder('car')
+        .where('LOWER(car.marka) LIKE LOWER(:marka)', { markasi: `%${marka}%` })
+        .getMany();
+
+      if (cars.length === 0) {
+        throw new NotFoundException(`No cars found with the marka "${marka}"`);
+      }
+      return cars;
+    } catch (error) {
+      console.error('Error searching for cars:', error);
+      throw new NotFoundException('Failed to search for cars');
+    }
+  }
+  async searchByLocation(location: string) {
+    try {
+      const cars = await this.carRepository
+        .createQueryBuilder('car')
+        .where('LOWER(car.location) LIKE LOWER(:location)', {
+          location: `%${location}%`,
+        })
+        .getMany();
+
+      if (cars.length === 0) {
+        throw new NotFoundException(
+          `No cars found with the location "${location}"`,
+        );
+      }
+      return cars;
+    } catch (error) {
+      console.error('Error searching for cars:', error);
+      throw new NotFoundException('Failed to search for cars');
+    }
+  }
+
+  async searchByColor(color: string) {
+    try {
+      const cars = await this.carRepository
+        .createQueryBuilder('car')
+        .where('LOWER(car.color) LIKE LOWER(:color)', {
+          color: `%${color}%`,
+        })
+        .getMany();
+
+      if (cars.length === 0) {
+        throw new NotFoundException(
+          `No cars found with the color "${color}"`,
+        );
+      }
+      return cars;
+    } catch (error) {
+      console.error('Error searching for cars:', error);
+      throw new NotFoundException('Failed to search for cars');
+    }
   }
 }

@@ -8,13 +8,16 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { CarService } from './car.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { UserGuard } from '../admin/guards/user.guard';
 import { Request } from 'express';
+import { Car } from './entities/car.entity';
+import { AdminGuard } from '../admin/guards/admin.guard';
 
 @ApiTags('car') // Adds the 'car' tag in Swagger UI
 @Controller('car')
@@ -78,5 +81,81 @@ export class CarController {
   @ApiResponse({ status: 404, description: 'Car not found.' })
   remove(@Param('id') id: string) {
     return this.carService.remove(+id);
+  }
+
+  @ApiQuery({
+    name: 'model',
+    required: true,
+    description: 'The car model to search for',
+  }) // Describes the query parameter
+  @ApiResponse({
+    status: 200,
+    description: 'List of cars matching the model',
+    type: [Car],
+  }) // Successful response description
+  @ApiResponse({
+    status: 404,
+    description: 'No cars found for the given model',
+  }) // 404 response description
+  @Get('search/model')
+  async searchByModel(@Query('model') model: string) {
+    return this.carService.searchByModel(model);
+  }
+
+  @ApiQuery({
+    name: 'marka',
+    required: true,
+    description: 'The car Marka to search for',
+  }) // Describes the query parameter
+  @ApiResponse({
+    status: 200,
+    description: 'List of cars matching the Marka',
+    type: [Car],
+  }) // Successful response description
+  @ApiResponse({
+    status: 404,
+    description: 'No cars found for the given Marka',
+  }) // 404 response description
+  @Get('search/marka')
+  async searchByMarka(@Query('marka') marka: string) {
+    return this.carService.searchByMarka(marka);
+  }
+
+  @ApiQuery({
+    name: 'location',
+    required: true,
+    description: 'The car location to search for',
+  }) // Describes the query parameter
+  @ApiResponse({
+    status: 200,
+    description: 'List of cars matching the location',
+    type: [Car],
+  }) // Successful response description
+  @ApiResponse({
+    status: 404,
+    description: 'No cars found for the given location',
+  }) // 404 response description
+  @Get('search/location')
+  async searchByLocation(@Query('location') location: string) {
+    return this.carService.searchByLocation(location);
+  }
+
+  @ApiQuery({
+    name: 'color',
+    required: true,
+    description: 'The car color to search for',
+  }) // Describes the query parameter
+  @ApiResponse({
+    status: 200,
+    description: 'List of cars matching the color',
+    type: [Car],
+  }) // Successful response description
+  @ApiResponse({
+    status: 404,
+    description: 'No cars found for the given color',
+  }) // 404 response description
+  @Get('search/color')
+  async searchByColor(@Query('color') color: string) {
+    return this.carService.searchByColor(color);
   }
 }
