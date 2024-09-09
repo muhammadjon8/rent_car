@@ -9,6 +9,7 @@ import { CarModule } from './car/car.module';
 import { Car } from './car/entities/car.entity';
 import { UserCarModule } from './user_car/user_car.module';
 import { UserCar } from './user_car/entities/user_car.entity';
+import { OrderModule } from './order/order.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
@@ -27,6 +28,7 @@ import { UserCar } from './user_car/entities/user_car.entity';
     UserModule,
     CarModule,
     UserCarModule,
+    OrderModule,
   ],
   controllers: [],
   providers: [],

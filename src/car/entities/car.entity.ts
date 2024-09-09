@@ -41,4 +41,13 @@ export class Car {
 
   @Column({ nullable: true })
   userId: number;
+
+  @Column({ nullable: true })
+  start_days_from: Date;
+
+  @Column({ nullable: true })
+  start_days_to: Date;
+
+  @Column({ nullable: true })
+  busy_hours: number
 }

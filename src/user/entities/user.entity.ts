@@ -21,6 +21,9 @@ export class User {
   @Column()
   address: string;
 
+  @Column({ nullable: true })
+  balance: number;
+
   @Column({ default: true })
   is_active: boolean;
 

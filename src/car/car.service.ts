@@ -174,4 +174,5 @@ export class CarService {
       throw new NotFoundException('Failed to search for cars');
     }
   }
+  
 }

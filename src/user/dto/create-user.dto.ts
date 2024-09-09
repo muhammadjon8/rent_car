@@ -33,4 +33,7 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   address: string;
+
+  @ApiProperty({ example: '1000000', description: 'User balance' })
+  balance: number;
 }
